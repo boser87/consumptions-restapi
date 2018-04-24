@@ -1,4 +1,4 @@
-package com.stefano.learning.service.utils;
+package com.stefano.learning.utils;
 
 import java.time.LocalDate;
 

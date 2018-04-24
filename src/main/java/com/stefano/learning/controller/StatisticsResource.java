@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("statistics")
-public class StatisticsResource {
+public class StatisticsResource extends AbstractResource {
 
     @Autowired
     private StatisticsService statisticsService;
@@ -18,10 +18,5 @@ public class StatisticsResource {
     @GetMapping(params = "driverId")
     public StatisticsDTO getStatistics(@RequestParam("driverId") String driverId) {
         return statisticsService.getStatisticsById(driverId);
-    }
-
-    @GetMapping
-    public StatisticsDTO getStatistics() {
-        return statisticsService.getStatistics();
     }
 }

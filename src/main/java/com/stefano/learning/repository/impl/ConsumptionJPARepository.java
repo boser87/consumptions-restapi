@@ -1,6 +1,7 @@
-package com.stefano.learning.repository;
+package com.stefano.learning.repository.impl;
 
 import com.stefano.learning.domain.Consumption;
+import com.stefano.learning.repository.ConsumptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,26 +20,26 @@ public class ConsumptionJPARepository implements ConsumptionRepository {
 
     @Override
     public Consumption save(Consumption consumption) {
-        return null;
+        return impl.save(consumption);
     }
 
     @Override
     public List<Consumption> findAll() {
-        return null;
+        return impl.findAll();
     }
 
     @Override
     public List<Consumption> findConsumptionByDriverId(String driverId) {
-        return null;
+        return impl.findConsumptionByDriverId(driverId);
     }
 
     @Override
     public List<Consumption> findConsumptionByDateBetween(LocalDate start, LocalDate end) {
-        return null;
+        return impl.findConsumptionByDateBetween(start, end);
     }
 
     @Override
     public List<Consumption> findConsumptionByDriverIdAndDateBetween(String driverId, LocalDate start, LocalDate end) {
-        return null;
+        return impl.findConsumptionByDriverIdAndDateBetween(driverId, start, end);
     }
 }

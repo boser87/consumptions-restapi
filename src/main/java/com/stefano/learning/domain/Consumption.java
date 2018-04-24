@@ -87,16 +87,6 @@ public class Consumption {
         return date;
     }
 
-    @Access(AccessType.PROPERTY)
-    @Column(name = "DATE_MONTH")
-    public int getDateMonthAsInt() {
-        return date.getMonth().getValue();
-    }
-
-    public void setDateMonthAsInt(int monthAsInt) {
-        this.date = this.date.withMonth(monthAsInt);
-    }
-
     public void setDate(LocalDate date) {
         this.date = date;
     }

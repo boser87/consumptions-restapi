@@ -1,38 +1,39 @@
 package com.stefano.learning.dto;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class StatisticsDTO {
 
-    Map<Object, BigDecimal> consumptionsTotalAmountByMonth;
-    Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeByMonth;
+    Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth;
+    Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType;
 
-    public StatisticsDTO(Map<Object, BigDecimal> consumptionsTotalAmountByMonth, Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeByMonth) {
+    public StatisticsDTO(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth, Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType) {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
-        this.consumptionsByFuelTypeByMonth = consumptionsByFuelTypeByMonth;
+        this.consumptionsByMonthByFuelType = consumptionsByMonthByFuelType;
     }
 
-    public StatisticsDTO(Map<Object, BigDecimal> consumptionsTotalAmountByMonth) {
+    public StatisticsDTO(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth) {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
-        this.consumptionsByFuelTypeByMonth = new HashMap<>();
+        this.consumptionsByMonthByFuelType = new HashMap<>();
     }
 
-    public Map<Object, BigDecimal> getConsumptionsTotalAmountByMonth() {
+    public Map<YearMonth, BigDecimal> getConsumptionsTotalAmountByMonth() {
         return consumptionsTotalAmountByMonth;
     }
 
-    public void setConsumptionsTotalAmountByMonth(Map<Object, BigDecimal> consumptionsTotalAmountByMonth) {
+    public void setConsumptionsTotalAmountByMonth(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth) {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
     }
 
-    public Map<Object, List<ConsumptionByFuelTypeDTO>> getConsumptionsByFuelTypeByMonth() {
-        return consumptionsByFuelTypeByMonth;
+    public Map<YearMonth, List<ConsumptionByFuelTypeDTO>> getConsumptionsByMonthByFuelType() {
+        return consumptionsByMonthByFuelType;
     }
 
-    public void setConsumptionsByFuelTypeByMonth(Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeByMonth) {
-        this.consumptionsByFuelTypeByMonth = consumptionsByFuelTypeByMonth;
+    public void setConsumptionsByMonthByFuelType(Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType) {
+        this.consumptionsByMonthByFuelType = consumptionsByMonthByFuelType;
     }
 }

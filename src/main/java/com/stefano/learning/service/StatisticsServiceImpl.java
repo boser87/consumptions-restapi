@@ -4,20 +4,18 @@ import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByFuelTypeDTO;
 import com.stefano.learning.dto.StatisticsDTO;
 import com.stefano.learning.repository.ConsumptionRepository;
+import com.stefano.learning.utils.aggregator.ConsumptionsAggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.*;
 
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
@@ -27,76 +25,52 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private ConsumptionRepository consumptionRepository;
 
-    @Override
-    public StatisticsDTO getStatistics() {
-        List<Consumption> allConsumptions = consumptionRepository.findAll();
-
-        Map<Object, BigDecimal> consumptionsTotalAmountByMonth = calculateTotalPriceOfConsumptionsGroupedByMonth(allConsumptions);
-
-        // groups by month and by fuel type
-        Map<Object, Map<String, List<Consumption>>> consumptionsGroupedByMonthByType = groupsByMonthAndFuelType(allConsumptions);
-
-        // cycles on the map and the nested map to calculate the aggregate values and required by the output DTO
-        Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOByMonth = createConsumptionsByFuelTypeDTOMap(consumptionsGroupedByMonthByType);
-
-        return new StatisticsDTO(consumptionsTotalAmountByMonth, consumptionsByFuelTypeDTOByMonth);
-    }
-
-    private Map<Object, Map<String, List<Consumption>>> groupsByMonthAndFuelType(List<Consumption> allConsumptions) {
-        return allConsumptions.stream().collect(groupingBy(item -> YearMonth.from(item.getDate()), groupingBy(Consumption::getFuelType)));
-    }
+    @Autowired
+    private ConsumptionsAggregator consumptionsAggregator;
 
     @Override
     public StatisticsDTO getStatisticsById(String driverId) {
-        List<Consumption> consumptionsByDriverId = consumptionRepository.findConsumptionByDriverId(driverId);
+        List<Consumption> consumptions = driverId.equals(null) || driverId.isEmpty() ? consumptionRepository.findAll() : consumptionRepository.findConsumptionByDriverId(driverId);
 
-        Map<Object, BigDecimal> consumptionsTotalAmountByMonth = calculateTotalPriceOfConsumptionsGroupedByMonth(consumptionsByDriverId);
+        Map<YearMonth, List<Consumption>> consumptionsByYearMonth = consumptionsAggregator.groupByYearMonth(consumptions);
+        Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth = consumptionsAggregator.reduceCalculatingTotalPrice(consumptionsByYearMonth);
 
-        // groups by month and by fuel type
-        Map<Object, Map<String, List<Consumption>>> consumptionsGroupedByMonthByType = groupsByMonthAndFuelType(consumptionsByDriverId);
-
-        Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOByMonth = createConsumptionsByFuelTypeDTOMap(consumptionsGroupedByMonthByType);
+        Map<YearMonth, Map<String, List<Consumption>>> consumptionsGroupedByMonthByType = consumptionsAggregator.groupByMonthAndFuelType(consumptions);
+        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOByMonth = createConsumptionsByFuelTypeDTOGroupedByMonth(consumptionsGroupedByMonthByType);
 
         return new StatisticsDTO(consumptionsTotalAmountByMonth, consumptionsByFuelTypeDTOByMonth);
     }
 
-    private Map<Object, BigDecimal> calculateTotalPriceOfConsumptionsGroupedByMonth(List<Consumption> allConsumptions) {
-        return allConsumptions.stream().collect(groupingBy(item -> YearMonth.from(item.getDate()), mapping(Consumption::getPrice, reducing(BigDecimal.ZERO, BigDecimal::add))));
-    }
-
+    // TODO: move this code to DTO constructor or DTO builder
     /**
      * cycles on the map and the nested map to calculate the aggregate values and required by the output DTO
      * @param consumptionsByMonthByType
      * @return
      */
-    private Map<Object, List<ConsumptionByFuelTypeDTO>> createConsumptionsByFuelTypeDTOMap(Map<Object, Map<String, List<Consumption>>> consumptionsByMonthByType) {
-        Map<Object, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOByMonth = new HashMap<>();
+    private Map<YearMonth, List<ConsumptionByFuelTypeDTO>> createConsumptionsByFuelTypeDTOGroupedByMonth(Map<YearMonth, Map<String, List<Consumption>>> consumptionsByMonthByType) {
+        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOGroupedByMonth = new HashMap<>();
 
-        for(Map.Entry<Object, Map<String, List<Consumption>>> entryByMonthByType : consumptionsByMonthByType.entrySet()) {
+        for(Map.Entry<YearMonth, Map<String, List<Consumption>>> entryByMonthByType : consumptionsByMonthByType.entrySet()) {
 
             // consumptions by fuel type for n-th month group
             Map<String, List<Consumption>> consumptionsByFuelType = entryByMonthByType.getValue();
 
             List<ConsumptionByFuelTypeDTO> consumptionsByFuelTypeDTO = new ArrayList<>();
             for(Map.Entry<String, List<Consumption>> entryByType : consumptionsByFuelType.entrySet()) {
-                // calculate total price of consumptions grouped by m-th fuel type in the n-th month group
-                BigDecimal totalPrice = entryByType.getValue().stream().collect(mapping(Consumption::getPrice, reducing(BigDecimal.ZERO, BigDecimal::add)));
+                // consumptions for n-th month and m-th fuel type group
+                List<Consumption> consumptions = entryByType.getValue();
 
-                // calculate total volume of consumptions grouped by m-th fuel type in the n-th month group
-                BigDecimal totalVolume = entryByType.getValue().stream().collect(mapping(Consumption::getVolume, reducing(BigDecimal.ZERO, BigDecimal::add)));
-
-                // calculate average price of consumptions grouped by m-th fuel type in the n-th month group
-                long count = entryByType.getValue().stream().count();
-                BigDecimal averagePrice = totalPrice.divide(new BigDecimal(count), 2, RoundingMode.CEILING);
-
-                ConsumptionByFuelTypeDTO consumptionByFuelTypeDTO = new ConsumptionByFuelTypeDTO(entryByType.getKey(), totalVolume, averagePrice, totalPrice);
+                ConsumptionByFuelTypeDTO consumptionByFuelTypeDTO = new ConsumptionByFuelTypeDTO(entryByType.getKey(),
+                        consumptionsAggregator.calculateTotalPrice(consumptions),
+                        consumptionsAggregator.calculateTotalVolume(consumptions),
+                        consumptionsAggregator.count(consumptions));
                 consumptionsByFuelTypeDTO.add(consumptionByFuelTypeDTO);
             }
 
-            consumptionsByFuelTypeDTOByMonth.put(entryByMonthByType.getKey(), consumptionsByFuelTypeDTO);
+            consumptionsByFuelTypeDTOGroupedByMonth.put(entryByMonthByType.getKey(), consumptionsByFuelTypeDTO);
         }
 
-        return consumptionsByFuelTypeDTOByMonth;
+        return consumptionsByFuelTypeDTOGroupedByMonth;
     }
 
 }

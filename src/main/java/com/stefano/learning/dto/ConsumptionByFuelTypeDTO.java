@@ -1,18 +1,25 @@
 package com.stefano.learning.dto;
 
+import com.stefano.learning.domain.Consumption;
+import com.stefano.learning.utils.aggregator.ConsumptionsAggregator;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 
 public class ConsumptionByFuelTypeDTO {
+
     private String fuelType;
     private BigDecimal totalVolume;
     private BigDecimal averagePrice;
     private BigDecimal totalPrice;
 
-    public ConsumptionByFuelTypeDTO(String fuelType, BigDecimal totalVolume, BigDecimal averagePrice, BigDecimal totalPrice) {
+    public ConsumptionByFuelTypeDTO(String fuelType, BigDecimal totalPrice, BigDecimal totalVolume, long count) {
         this.fuelType = fuelType;
-        this.totalVolume = totalVolume;
-        this.averagePrice = averagePrice;
         this.totalPrice = totalPrice;
+        this.totalVolume = totalVolume;
+        this.averagePrice = totalPrice.divide(new BigDecimal(count), 2, RoundingMode.CEILING);
     }
 
     public String getFuelType() {

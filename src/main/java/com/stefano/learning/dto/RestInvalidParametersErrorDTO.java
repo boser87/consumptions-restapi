@@ -1,12 +1,12 @@
-package com.stefano.learning.domain;
+package com.stefano.learning.dto;
 
 import java.util.List;
 
-public class RestInvalidParametersError extends RestError {
+public class RestInvalidParametersErrorDTO extends RestErrorDTO {
 
     public final List<String> fieldsWithError;
 
-    public RestInvalidParametersError(Exception ex, String detail, List<String> fieldsWithError) {
+    public RestInvalidParametersErrorDTO(Exception ex, String detail, List<String> fieldsWithError) {
         super(ex, detail);
         this.fieldsWithError = fieldsWithError;
     }

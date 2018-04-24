@@ -15,12 +15,12 @@ public class ConsumptionByMonthDTO {
     private BigDecimal totalPrice;
     private String driverId;
 
-    public ConsumptionByMonthDTO(String fuelType, BigDecimal volume, LocalDate date, BigDecimal price, BigDecimal totalPrice, String driverId) {
+    public ConsumptionByMonthDTO(String fuelType, BigDecimal volume, LocalDate date, BigDecimal price, String driverId) {
         this.fuelType = fuelType;
         this.volume = volume;
         this.date = date;
         this.price = price;
-        this.totalPrice = totalPrice;
+        this.totalPrice = volume.multiply(price);
         this.driverId = driverId;
     }
 
