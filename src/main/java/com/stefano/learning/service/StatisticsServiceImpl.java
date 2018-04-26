@@ -30,7 +30,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public StatisticsDTO getStatisticsById(String driverId) {
-        List<Consumption> consumptions = driverId.equals(null) || driverId.isEmpty() ? consumptionRepository.findAll() : consumptionRepository.findConsumptionByDriverId(driverId);
+        List<Consumption> consumptions = driverId == null || driverId.isEmpty() ? consumptionRepository.findAll() : consumptionRepository.findConsumptionByDriverId(driverId);
 
         Map<YearMonth, List<Consumption>> consumptionsByYearMonth = consumptionsAggregator.groupByYearMonth(consumptions);
         Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth = consumptionsAggregator.reduceCalculatingTotalPrice(consumptionsByYearMonth);
