@@ -32,25 +32,23 @@ public class StatisticsServiceImpl implements StatisticsService {
     public StatisticsDTO getStatisticsById(String driverId) {
         List<Consumption> consumptions = driverId == null || driverId.isEmpty() ? consumptionRepository.findAll() : consumptionRepository.findConsumptionByDriverId(driverId);
 
-        Map<YearMonth, List<Consumption>> consumptionsByYearMonth = consumptionsAggregator.groupByYearMonth(consumptions);
-        Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth = consumptionsAggregator.reduceCalculatingTotalPrice(consumptionsByYearMonth);
+        Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth = createConsumptionsTotalAmountByMonth(consumptions);
 
-        Map<YearMonth, Map<String, List<Consumption>>> consumptionsGroupedByMonthByType = consumptionsAggregator.groupByMonthAndFuelType(consumptions);
-        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOByMonth = createConsumptionsByFuelTypeDTOGroupedByMonth(consumptionsGroupedByMonthByType);
+        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth = createConsumptionsStatisticsByMonth(consumptions);
 
-        return new StatisticsDTO(consumptionsTotalAmountByMonth, consumptionsByFuelTypeDTOByMonth);
+        return new StatisticsDTO(consumptionsTotalAmountByMonth, consumptionsStatisticsByMonth);
     }
 
-    // TODO: move this code to DTO constructor or DTO builder
-    /**
-     * cycles on the map and the nested map to calculate the aggregate values and required by the output DTO
-     * @param consumptionsByMonthByType
-     * @return
-     */
-    private Map<YearMonth, List<ConsumptionByFuelTypeDTO>> createConsumptionsByFuelTypeDTOGroupedByMonth(Map<YearMonth, Map<String, List<Consumption>>> consumptionsByMonthByType) {
-        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByFuelTypeDTOGroupedByMonth = new HashMap<>();
+    private Map<YearMonth, BigDecimal> createConsumptionsTotalAmountByMonth(List<Consumption> consumptions) {
+        Map<YearMonth, List<Consumption>> consumptionsByYearMonth = consumptionsAggregator.groupByYearMonth(consumptions);
+        return consumptionsAggregator.reduceCalculatingTotalPrice(consumptionsByYearMonth);
+    }
 
-        for(Map.Entry<YearMonth, Map<String, List<Consumption>>> entryByMonthByType : consumptionsByMonthByType.entrySet()) {
+    private Map<YearMonth, List<ConsumptionByFuelTypeDTO>> createConsumptionsStatisticsByMonth(List<Consumption> consumptions) {
+        Map<YearMonth, Map<String, List<Consumption>>> consumptionsGroupedByMonthByType = consumptionsAggregator.groupByMonthAndFuelType(consumptions);
+        Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth = new HashMap<>();
+
+        for(Map.Entry<YearMonth, Map<String, List<Consumption>>> entryByMonthByType : consumptionsGroupedByMonthByType.entrySet()) {
 
             // consumptions by fuel type for n-th month group
             Map<String, List<Consumption>> consumptionsByFuelType = entryByMonthByType.getValue();
@@ -58,19 +56,19 @@ public class StatisticsServiceImpl implements StatisticsService {
             List<ConsumptionByFuelTypeDTO> consumptionsByFuelTypeDTO = new ArrayList<>();
             for(Map.Entry<String, List<Consumption>> entryByType : consumptionsByFuelType.entrySet()) {
                 // consumptions for n-th month and m-th fuel type group
-                List<Consumption> consumptions = entryByType.getValue();
+                List<Consumption> consumptionsByMonthByType = entryByType.getValue();
 
                 ConsumptionByFuelTypeDTO consumptionByFuelTypeDTO = new ConsumptionByFuelTypeDTO(entryByType.getKey(),
-                        consumptionsAggregator.calculateTotalPrice(consumptions),
-                        consumptionsAggregator.calculateTotalVolume(consumptions),
-                        consumptionsAggregator.count(consumptions));
+                        consumptionsAggregator.calculateTotalPrice(consumptionsByMonthByType),
+                        consumptionsAggregator.calculateTotalVolume(consumptionsByMonthByType),
+                        consumptionsAggregator.count(consumptionsByMonthByType));
                 consumptionsByFuelTypeDTO.add(consumptionByFuelTypeDTO);
             }
 
-            consumptionsByFuelTypeDTOGroupedByMonth.put(entryByMonthByType.getKey(), consumptionsByFuelTypeDTO);
+            consumptionsStatisticsByMonth.put(entryByMonthByType.getKey(), consumptionsByFuelTypeDTO);
         }
 
-        return consumptionsByFuelTypeDTOGroupedByMonth;
+        return consumptionsStatisticsByMonth;
     }
 
 }

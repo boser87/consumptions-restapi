@@ -13,4 +13,6 @@ public interface ConsumptionService {
     List<Consumption> getAllConsumptions();
 
     List<ConsumptionByMonthDTO> getConsumptionsByMonth(String driverId, int month);
+
+    List<Consumption> saveBatch(List<Consumption> consumptions);
 }

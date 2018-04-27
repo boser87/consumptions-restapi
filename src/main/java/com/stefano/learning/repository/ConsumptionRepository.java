@@ -9,6 +9,8 @@ import java.util.List;
 public interface ConsumptionRepository {
     Consumption save(Consumption consumption);
 
+    List<Consumption> saveAll(List<Consumption> consumptions);
+
     List<Consumption> findAll();
 
     List<Consumption> findConsumptionByDriverId(String driverId);

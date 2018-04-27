@@ -9,16 +9,16 @@ import java.util.Map;
 public class StatisticsDTO {
 
     Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth;
-    Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType;
+    Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth;
 
-    public StatisticsDTO(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth, Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType) {
+    public StatisticsDTO(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth, Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth) {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
-        this.consumptionsByMonthByFuelType = consumptionsByMonthByFuelType;
+        this.consumptionsStatisticsByMonth = consumptionsStatisticsByMonth;
     }
 
     public StatisticsDTO(Map<YearMonth, BigDecimal> consumptionsTotalAmountByMonth) {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
-        this.consumptionsByMonthByFuelType = new HashMap<>();
+        this.consumptionsStatisticsByMonth = new HashMap<>();
     }
 
     public Map<YearMonth, BigDecimal> getConsumptionsTotalAmountByMonth() {
@@ -29,11 +29,11 @@ public class StatisticsDTO {
         this.consumptionsTotalAmountByMonth = consumptionsTotalAmountByMonth;
     }
 
-    public Map<YearMonth, List<ConsumptionByFuelTypeDTO>> getConsumptionsByMonthByFuelType() {
-        return consumptionsByMonthByFuelType;
+    public Map<YearMonth, List<ConsumptionByFuelTypeDTO>> getConsumptionsStatisticsByMonth() {
+        return consumptionsStatisticsByMonth;
     }
 
-    public void setConsumptionsByMonthByFuelType(Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsByMonthByFuelType) {
-        this.consumptionsByMonthByFuelType = consumptionsByMonthByFuelType;
+    public void setConsumptionsStatisticsByMonth(Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth) {
+        this.consumptionsStatisticsByMonth = consumptionsStatisticsByMonth;
     }
 }

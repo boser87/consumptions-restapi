@@ -7,12 +7,15 @@ import com.stefano.learning.controller.exception.DataFormatException;
 import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByMonthDTO;
 import com.stefano.learning.service.ConsumptionService;
+import com.stefano.learning.utils.filereader.ConsumptionsFileReader;
+import com.stefano.learning.utils.filereader.ConsumptionsFileReadingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -25,6 +28,9 @@ public class ConsumptionResource extends AbstractResource {
 
     @Autowired
     private ConsumptionService consumptionService;
+
+    @Autowired
+    private ConsumptionsFileReader consumptionsFileReader;
 
     @PostMapping
     public ResponseEntity<Object> createConsumption(@Valid @RequestBody Consumption consumption, BindingResult bindingResult) {
@@ -40,6 +46,21 @@ public class ConsumptionResource extends AbstractResource {
 
         return ResponseEntity.created(location).build();
 
+    }
+
+    @PostMapping("batch")
+    public List<Consumption> createConsumptionsFromFile(@RequestParam("file") MultipartFile file) {
+
+        List<Consumption> consumptionsList;
+
+        try {
+            consumptionsList = consumptionsFileReader.getConsumptionsList(file);
+        } catch(ConsumptionsFileReadingException ex) {
+            // TODO: need to throw appropriate exception and handle it
+            return null;
+        }
+
+        return consumptionService.saveBatch(consumptionsList);
     }
 
     @GetMapping(params = "month")

@@ -18,6 +18,7 @@ public class Consumption {
     @GeneratedValue
     private Long id;
     @ValidFuelType
+    // TODO: check if we really need FuelType enum
     private String fuelType;
     // TODO: is BigDecimal a good choice?
     @NotNull
@@ -57,10 +58,6 @@ public class Consumption {
 
     public String getFuelType() {
         return fuelType;
-    }
-
-    public FuelType getFuelTypeAsEnum() {
-        return FuelType.valueOf(fuelType);
     }
 
     public void setFuelType(String fuelType) {

@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +47,12 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
         List<Consumption> consumptionsByMonthAndByDriverId = consumptionRepository.findConsumptionByDriverIdAndDateBetween(driverId, between.getStart(), between.getEnd());
         return buildConsumptionsByMonthDTO(consumptionsByMonthAndByDriverId);
+    }
+
+    @Override
+    @Transactional
+    public List<Consumption> saveBatch(List<Consumption> consumptions) {
+        return consumptionRepository.saveAll(consumptions);
     }
 
     // TODO: this can be moved to external class or can use modelmapper
