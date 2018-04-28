@@ -1,8 +1,8 @@
 package com.stefano.learning.rest.example;
 
 
-import com.stefano.learning.domain.Consumption;
-import com.stefano.learning.service.aggregator.ConsumptionsAggregatorImpl;
+import com.stefano.learning.core.domain.Consumption;
+import com.stefano.learning.statistics.service.aggregator.ConsumptionsAggregatorImpl;
 import org.junit.Before;
 import org.junit.Test;
 

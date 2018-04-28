@@ -1,7 +1,7 @@
 package com.stefano.learning.rest.example;
 
-import com.stefano.learning.domain.Consumption;
-import com.stefano.learning.utils.filereader.ConsumptionsFileReaderImpl;
+import com.stefano.learning.core.domain.Consumption;
+import com.stefano.learning.consumptions.utils.filereader.ConsumptionsFileReaderImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

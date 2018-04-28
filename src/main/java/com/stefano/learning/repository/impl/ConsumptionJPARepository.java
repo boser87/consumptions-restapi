@@ -1,7 +1,7 @@
 package com.stefano.learning.repository.impl;
 
 import com.stefano.learning.ConsumptionsConfigurations;
-import com.stefano.learning.domain.Consumption;
+import com.stefano.learning.core.domain.Consumption;
 import com.stefano.learning.repository.ConsumptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,7 @@ public class ConsumptionJPARepository implements ConsumptionRepository {
     private final ImportedConsumptionJPARepository impl;
 
     @PersistenceContext
+    private
     EntityManager entityManager;
 
     @Autowired

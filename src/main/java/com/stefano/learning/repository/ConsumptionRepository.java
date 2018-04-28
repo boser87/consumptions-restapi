@@ -1,7 +1,6 @@
 package com.stefano.learning.repository;
 
-import com.stefano.learning.domain.Consumption;
-import org.springframework.data.repository.RepositoryDefinition;
+import com.stefano.learning.core.domain.Consumption;
 
 import java.time.LocalDate;
 import java.util.List;
