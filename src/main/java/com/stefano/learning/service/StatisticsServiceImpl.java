@@ -4,7 +4,7 @@ import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByFuelTypeDTO;
 import com.stefano.learning.dto.StatisticsDTO;
 import com.stefano.learning.repository.ConsumptionRepository;
-import com.stefano.learning.utils.aggregator.ConsumptionsAggregator;
+import com.stefano.learning.service.aggregator.ConsumptionsAggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         Map<YearMonth, List<ConsumptionByFuelTypeDTO>> consumptionsStatisticsByMonth = createConsumptionsStatisticsByMonth(consumptions);
 
         return new StatisticsDTO(consumptionsTotalAmountByMonth, consumptionsStatisticsByMonth);
+    }
+
+    @Override
+    public StatisticsDTO getStatistics() {
+        return getStatisticsById(null);
     }
 
     private Map<YearMonth, BigDecimal> createConsumptionsTotalAmountByMonth(List<Consumption> consumptions) {

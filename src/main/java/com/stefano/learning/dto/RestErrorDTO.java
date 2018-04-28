@@ -1,12 +1,11 @@
 package com.stefano.learning.dto;
 
-public class RestErrorDTO {
+import com.stefano.learning.controller.exception.ConsumptionsApplicationException;
 
-    public final String detail;
+public class RestErrorDTO {
     public final String message;
 
-    public RestErrorDTO(Exception ex, String detail) {
-        this.message = ex.getLocalizedMessage();
-        this.detail = detail;
+    public RestErrorDTO(ConsumptionsApplicationException ex) {
+        this.message = ex.getError();
     }
 }

@@ -1,16 +1,16 @@
 package com.stefano.learning.repository.impl;
 
+import com.stefano.learning.ConsumptionsConfigurations;
 import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.repository.ConsumptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConsumptionJPARepository implements ConsumptionRepository {
@@ -19,6 +19,9 @@ public class ConsumptionJPARepository implements ConsumptionRepository {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Autowired
+    private ConsumptionsConfigurations consumptionsConfigurations;
 
     @Autowired
     public ConsumptionJPARepository(final ImportedConsumptionJPARepository impl) {
@@ -32,27 +35,23 @@ public class ConsumptionJPARepository implements ConsumptionRepository {
 
     @Override
     public List<Consumption> saveAll(List<Consumption> consumptions) {
-        final List<Consumption> savedConsumptions = new ArrayList<>(consumptions.size());
-        int batchSize = 20;
-
         int i = 0;
         for(Consumption consumption : consumptions) {
             if(consumption.getId() == null) {
                 entityManager.persist(consumption);
             } else {
-                consumption = entityManager.merge(consumption);
+                entityManager.merge(consumption);
             }
 
-            savedConsumptions.add(consumption);
             i++;
 
-            if(i % batchSize == 0) {
+            if(i % consumptionsConfigurations.getBatchSize() == 0) {
                 entityManager.flush();
                 entityManager.clear();
             }
         }
 
-        return savedConsumptions;
+        return consumptions;
     }
 
     @Override
@@ -73,5 +72,10 @@ public class ConsumptionJPARepository implements ConsumptionRepository {
     @Override
     public List<Consumption> findConsumptionByDriverIdAndDateBetween(String driverId, LocalDate start, LocalDate end) {
         return impl.findConsumptionByDriverIdAndDateBetween(driverId, start, end);
+    }
+
+    @Override
+    public Optional<Consumption> findById(Long id) {
+        return impl.findById(id);
     }
 }

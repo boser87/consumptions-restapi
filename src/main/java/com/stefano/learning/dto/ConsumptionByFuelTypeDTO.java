@@ -1,12 +1,7 @@
 package com.stefano.learning.dto;
 
-import com.stefano.learning.domain.Consumption;
-import com.stefano.learning.utils.aggregator.ConsumptionsAggregator;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 public class ConsumptionByFuelTypeDTO {
 

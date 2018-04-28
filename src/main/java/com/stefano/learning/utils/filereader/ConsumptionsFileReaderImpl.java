@@ -4,13 +4,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stefano.learning.domain.Consumption;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,7 +35,7 @@ public class ConsumptionsFileReaderImpl implements ConsumptionsFileReader {
             throw new ConsumptionsFileReadingException("Error while parsing or mapping the input to a list of consumptions");
         } catch (IOException exception) {
             log.info("Error while reading consumptions list file", exception);
-            throw new ConsumptionsFileReadingException("Generic I/O exception occured");
+            throw new ConsumptionsFileReadingException("Generic I/O exception occurred");
         }
 
         return consumptions;

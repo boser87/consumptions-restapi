@@ -2,10 +2,13 @@ package com.stefano.learning.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
+import com.stefano.learning.controller.exception.ConsumptionNotFoundException;
 import com.stefano.learning.controller.exception.DataFormatException;
 import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByMonthDTO;
+import com.stefano.learning.dto.ConsumptionsBatchDTO;
 import com.stefano.learning.service.ConsumptionService;
 import com.stefano.learning.utils.filereader.ConsumptionsFileReader;
 import com.stefano.learning.utils.filereader.ConsumptionsFileReadingException;
@@ -21,7 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("consumptions")
+@RequestMapping("${resource.consumption.name}")
 public class ConsumptionResource extends AbstractResource {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -49,23 +52,25 @@ public class ConsumptionResource extends AbstractResource {
     }
 
     @PostMapping("batch")
-    public List<Consumption> createConsumptionsFromFile(@RequestParam("file") MultipartFile file) {
+    public ConsumptionsBatchDTO createConsumptionsFromFile(@RequestParam("file") MultipartFile file) throws ConsumptionsFileReadingException {
 
-        List<Consumption> consumptionsList;
+        List<Consumption> consumptionsList = consumptionsFileReader.getConsumptionsList(file);
+        return consumptionService.saveBatch(consumptionsList);
+    }
 
-        try {
-            consumptionsList = consumptionsFileReader.getConsumptionsList(file);
-        } catch(ConsumptionsFileReadingException ex) {
-            // TODO: need to throw appropriate exception and handle it
-            return null;
+    @GetMapping("/{id}")
+    public Consumption getConsumption(@PathVariable("id") Long id) throws ConsumptionNotFoundException {
+        Optional<Consumption> consumption = consumptionService.findById(id);
+
+        if(!consumption.isPresent()) {
+            throw new ConsumptionNotFoundException(String.format("Consumption with id [%s] does not exist", String.valueOf(id)));
         }
 
-        return consumptionService.saveBatch(consumptionsList);
+        return consumption.get();
     }
 
     @GetMapping(params = "month")
     public List<ConsumptionByMonthDTO> getConsumptionsByMonth(@RequestParam("month") int month) {
-        // TODO: return meaningful error for missing params or invalid month format
         return consumptionService.getConsumptionsByMonth(month);
     }
 

@@ -1,19 +1,21 @@
 package com.stefano.learning.service;
 
+import com.stefano.learning.ConsumptionsConfigurations;
 import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByMonthDTO;
+import com.stefano.learning.dto.ConsumptionsBatchDTO;
 import com.stefano.learning.repository.ConsumptionRepository;
 import com.stefano.learning.utils.Between;
+import com.stefano.learning.utils.filereader.ConsumptionsFileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConsumptionServiceImpl implements ConsumptionService {
@@ -22,6 +24,9 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
     @Autowired
     private ConsumptionRepository consumptionRepository;
+
+    @Autowired
+    private ConsumptionsConfigurations consumptionsConfigurations;
 
     @Override
     public Consumption save(Consumption consumption) {
@@ -51,11 +56,16 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
     @Override
     @Transactional
-    public List<Consumption> saveBatch(List<Consumption> consumptions) {
-        return consumptionRepository.saveAll(consumptions);
+    public ConsumptionsBatchDTO saveBatch(List<Consumption> consumptions) {
+        List<Consumption> savedConsumptions = consumptionRepository.saveAll(consumptions);
+        return new ConsumptionsBatchDTO(savedConsumptions, consumptionsConfigurations.getConsumptionsResourceName());
     }
 
-    // TODO: this can be moved to external class or can use modelmapper
+    @Override
+    public Optional<Consumption> findById(Long id) {
+        return consumptionRepository.findById(id);
+    }
+
     private List<ConsumptionByMonthDTO> buildConsumptionsByMonthDTO(List<Consumption> consumptions) {
         List<ConsumptionByMonthDTO> consumptionsByMonthDTO = new ArrayList<>();
         for(Consumption consumption : consumptions) {

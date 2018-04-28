@@ -15,8 +15,13 @@ public class StatisticsResource extends AbstractResource {
     @Autowired
     private StatisticsService statisticsService;
 
-    @GetMapping
-    public StatisticsDTO getStatistics(@RequestParam(value = "driverId", required = false) String driverId) {
+    @GetMapping(params = "driverId")
+    public StatisticsDTO getStatistics(@RequestParam(value = "driverId") String driverId) {
         return statisticsService.getStatisticsById(driverId);
+    }
+
+    @GetMapping
+    public StatisticsDTO getStatistics() {
+        return statisticsService.getStatistics();
     }
 }

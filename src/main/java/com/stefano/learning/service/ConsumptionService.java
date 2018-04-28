@@ -2,8 +2,10 @@ package com.stefano.learning.service;
 
 import com.stefano.learning.domain.Consumption;
 import com.stefano.learning.dto.ConsumptionByMonthDTO;
+import com.stefano.learning.dto.ConsumptionsBatchDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ConsumptionService {
     Consumption save(Consumption consumption);
@@ -14,5 +16,7 @@ public interface ConsumptionService {
 
     List<ConsumptionByMonthDTO> getConsumptionsByMonth(String driverId, int month);
 
-    List<Consumption> saveBatch(List<Consumption> consumptions);
+    ConsumptionsBatchDTO saveBatch(List<Consumption> consumptions);
+
+    Optional<Consumption> findById(Long id);
 }

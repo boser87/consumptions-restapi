@@ -1,11 +1,7 @@
 package com.stefano.learning.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.stefano.learning.domain.FuelType;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Calendar;
 public class ConsumptionByMonthDTO {
 
     private String fuelType;

@@ -18,7 +18,6 @@ public class Consumption {
     @GeneratedValue
     private Long id;
     @ValidFuelType
-    // TODO: check if we really need FuelType enum
     private String fuelType;
     // TODO: is BigDecimal a good choice?
     @NotNull

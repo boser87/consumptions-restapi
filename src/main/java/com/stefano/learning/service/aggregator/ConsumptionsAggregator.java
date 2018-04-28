@@ -1,4 +1,4 @@
-package com.stefano.learning.utils.aggregator;
+package com.stefano.learning.service.aggregator;
 
 import com.stefano.learning.domain.Consumption;
 

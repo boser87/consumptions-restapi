@@ -1,18 +1,10 @@
 package com.stefano.learning.utils.filereader;
 
-public class ConsumptionsFileReadingException extends RuntimeException {
+import com.stefano.learning.controller.exception.ConsumptionsApplicationException;
 
-    private String error;
+public class ConsumptionsFileReadingException extends ConsumptionsApplicationException {
 
     ConsumptionsFileReadingException(String error) {
-        this.error = error;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
+        super(error);
     }
 }

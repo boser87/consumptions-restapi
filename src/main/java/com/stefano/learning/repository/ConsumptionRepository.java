@@ -5,6 +5,7 @@ import org.springframework.data.repository.RepositoryDefinition;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ConsumptionRepository {
     Consumption save(Consumption consumption);
@@ -19,4 +20,5 @@ public interface ConsumptionRepository {
 
     List<Consumption> findConsumptionByDriverIdAndDateBetween(String driverId, LocalDate start, LocalDate end);
 
+    Optional<Consumption> findById(Long id);
 }

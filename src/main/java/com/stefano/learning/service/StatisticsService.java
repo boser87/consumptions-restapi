@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface StatisticsService {
     StatisticsDTO getStatisticsById(String id);
+    StatisticsDTO getStatistics();
 }

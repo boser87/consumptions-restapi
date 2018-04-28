@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ImportedConsumptionJPARepository extends JpaRepository<Consumption, Long> {
     Consumption save(Consumption consumption);
@@ -16,4 +17,6 @@ public interface ImportedConsumptionJPARepository extends JpaRepository<Consumpt
     List<Consumption> findConsumptionByDateBetween(LocalDate start, LocalDate end);
 
     List<Consumption> findConsumptionByDriverIdAndDateBetween(String driverId, LocalDate start, LocalDate end);
+
+    Optional<Consumption> findById(Long id);
 }
